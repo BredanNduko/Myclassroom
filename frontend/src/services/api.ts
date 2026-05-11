@@ -17,15 +17,15 @@ export const apiService = {
     register: (email: string, password: string, name: string, role: string) => api.post('/auth/register', { email, password, name, role }).then(r => r.data),
     getUser: () => api.get('/auth/me').then(r => r.data.user),
   },
-  Classes: {
+   Classes: {
     getAvailable: () => api.get('/classes/available').then(r => r.data.classes),
     getMyClasses: () => api.get('/classes/my').then(r => r.data.classes),
     getMyClassesAsLecturer: () => api.get('/lecturers').then(r => r.data.classes),
     createClass: (data: any) => api.post('/lecturers', data),
     updateClass: (id: string, data: any) => api.put(`/lecturers/${id}`, data),
     deleteClass: (id: string) => api.delete(`/lecturers/${id}`),
-    enroll: (classId: string) => api.post('/students/classes', { classId }),
-    drop: (classId: string) => api.delete(`/students/classes/${classId}`),
+    enroll: (classId: string) => api.post('/students', { classId }),
+    drop: (classId: string) => api.delete(`/students/${classId}`),
   },
   Notes: {
     getByClass: (classId: string) => api.get(`/notes/class/${classId}`).then(r => r.data.notes),

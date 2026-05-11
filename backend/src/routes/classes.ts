@@ -12,13 +12,23 @@ router.get('/available', authMiddleware, (req: Request, res: Response) => {
     SELECT classId FROM class_enrollments WHERE studentId = ?
   `).all(studentId).map((e: any) => e.classId);
 
-  const classes = db.prepare(`
-    SELECT c.id, c.name, c.code, c.schedule, c.location, u.name as lecturerName
-    FROM classes c
-    JOIN users u ON c.lecturerId = u.id
-    WHERE c.id NOT IN (${enrolled.length ? enrolled.map(() => '?').join(',') : 'NULL'})
-    ORDER BY c.name
-  `).all(...enrolled);
+  let classes: any[];
+  if (enrolled.length === 0) {
+    classes = db.prepare(`
+      SELECT c.id, c.name, c.code, c.schedule, c.location, u.name as lecturerName
+      FROM classes c
+      JOIN users u ON c.lecturerId = u.id
+      ORDER BY c.name
+    `).all();
+  } else {
+    classes = db.prepare(`
+      SELECT c.id, c.name, c.code, c.schedule, c.location, u.name as lecturerName
+      FROM classes c
+      JOIN users u ON c.lecturerId = u.id
+      WHERE c.id NOT IN (${enrolled.map(() => '?').join(',')})
+      ORDER BY c.name
+    `).all(...enrolled);
+  }
 
   res.json({ classes });
 });
