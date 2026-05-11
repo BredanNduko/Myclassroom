@@ -13,7 +13,7 @@ api.interceptors.request.use((config) => {
 
 export const apiService = {
   Auth: {
-    login: (email: string, password: string) => api.post('/auth/login', { email, password }).then(r => r.data),
+    login: (email: string, password: string, role?: 'student' | 'lecturer') => api.post('/auth/login', { email, password, role }).then(r => r.data),
     register: (email: string, password: string, name: string, role: string) => api.post('/auth/register', { email, password, name, role }).then(r => r.data),
     getUser: () => api.get('/auth/me').then(r => r.data.user),
   },

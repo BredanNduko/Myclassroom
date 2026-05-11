@@ -44,16 +44,23 @@ router.post('/register', [
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
+  body('role').optional().isIn(['student', 'lecturer']),
 ], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     const db = (global as any).db;
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
+    let query = 'SELECT * FROM users WHERE email = ?';
+    let params: any[] = [email];
+    if (role) {
+      query += ' AND role = ?';
+      params.push(role);
+    }
+    const user = db.prepare(query).get(...params) as any;
 
     if (!user || !(await comparePassword(password, user.password))) {
       return res.status(401).json({ error: 'Invalid credentials' });

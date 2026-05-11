@@ -8,15 +8,16 @@ import AssignmentsList from '../components/AssignmentsList';
 import TodoList from '../components/TodoList';
 import { PlusCircle, BookOpen, ClipboardList, CheckSquare } from 'lucide-react';
 
-type Tab = 'classes' | 'notes' | 'assignments' | 'todos';
+type Tab = 'classes' | 'available' | 'notes' | 'assignments' | 'todos';
 
 export default function StudentDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('classes');
   const [classes, setClasses] = useState<Class[]>([]);
+  const [availableClasses, setAvailableClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetchClasses(); }, []);
+  useEffect(() => { fetchClasses(); fetchAvailableClasses(); }, []);
 
   const fetchClasses = async () => {
     try { const data = await apiService.Classes.getMyClasses(); setClasses(data); }
@@ -24,12 +25,18 @@ export default function StudentDashboard() {
     finally { setLoading(false); }
   };
 
-  const tabs = [
-    { id: 'classes', label: 'My Classes', icon: BookOpen },
-    { id: 'notes', label: 'Notes', icon: PlusCircle },
-    { id: 'assignments', label: 'Assignments', icon: ClipboardList },
-    { id: 'todos', label: 'To-Do', icon: CheckSquare },
-  ] as const;
+  const fetchAvailableClasses = async () => {
+    try { const data = await apiService.Classes.getAvailable(); setAvailableClasses(data); }
+    catch (error) { console.error('Failed to fetch available classes:', error); }
+  };
+
+   const tabs = [
+     { id: 'classes', label: 'My Classes', icon: BookOpen },
+     { id: 'available', label: 'Browse Classes', icon: BookOpen },
+     { id: 'notes', label: 'Notes', icon: PlusCircle },
+     { id: 'assignments', label: 'Assignments', icon: ClipboardList },
+     { id: 'todos', label: 'To-Do', icon: CheckSquare },
+   ] as const;
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -5,6 +5,7 @@ import { Link, Navigate } from 'react-router-dom';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'student' | 'lecturer'>('student');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, user } = useAuth();
@@ -15,7 +16,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    try { await login(email, password); }
+    try { await login(email, password, role); }
     catch (err: any) { setError(err.response?.data?.error || 'Login failed'); }
     finally { setLoading(false); }
   };
@@ -30,11 +31,18 @@ export default function Login() {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Welcome back</h2>
           {error && <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm border border-red-200">{error}</div>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition" placeholder="you@university.edu" required />
-            </div>
+           <form onSubmit={handleSubmit} className="space-y-4">
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-1">I am a...</label>
+               <div className="grid grid-cols-2 gap-3">
+                 <button type="button" onClick={() => setRole('student')} className={`py-3 px-4 rounded-lg border-2 font-medium transition ${role === 'student' ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:border-primary-300'}`}>Student</button>
+                 <button type="button" onClick={() => setRole('lecturer')} className={`py-3 px-4 rounded-lg border-2 font-medium transition ${role === 'lecturer' ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:border-primary-300'}`}>Lecturer</button>
+               </div>
+             </div>
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+               <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition" placeholder="you@university.edu" required />
+             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition" placeholder="••••••••" required />
